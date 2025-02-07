@@ -1,13 +1,21 @@
+# Author:  Arbab Mustafa
 
-# making console based application using python
-import datetime as dt
-from cold import Weather
+from guess import GuessNumber
+from calculator import Calculator
 
 def main():
-    # month = int(input("Enter month number: "))
-    # Weather(month)
+     # GuessNumber()
+     print("Calculator")
+     print("Enter first number: ")
+     x = int(input())
+     print("Enter second number: ")
+     y = int(input())
+     
+
+     Calculator(x,y)
 
 
 if __name__ == "__main__":
     main()
+
              
