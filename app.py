@@ -2,7 +2,9 @@
 
 from guess import GuessNumber
 from calculator import Calculator
-from stuent import  readfile
+from stuent import  write, readfile
+
+DataFile = "./student.json"
 
 def main():
      # GuessNumber()
@@ -13,7 +15,8 @@ def main():
      # y = int(input())
      # Calculator(x,y)
 
-      readfile()
+    # write(DataFile)
+    readfile(DataFile)
 
 
 
