@@ -4,6 +4,7 @@ from guess import GuessNumber
 from calculator import Calculator
 from stuent import  write, readfile
 from a import read,write
+from api import data_get
 
 DataFile = "./student.json"
 a= "a.txt"
@@ -20,9 +21,11 @@ def main():
     # write(DataFile)
     # readfile(DataFile)
 
-    
-    write(a)
+    # write(a)
     # read(a)
+    data_get("/data", params={"key": "value"})
+
+    
 
 
 
