@@ -1,7 +1,7 @@
 import requests
 
 # Base API URL
-BASE_URL =  "https://ipinfo.io/134.201.250.155/json"
+# BASE_URL =  "https://ipinfo.io/134.201.250.155/json"
 
 def GetIP ( endPoint , params:'None' ):
     try:
@@ -13,5 +13,7 @@ def GetIP ( endPoint , params:'None' ):
         print("Network connection error occurred")
         return None
 
+import requests
 
-        
+ 
+ 
