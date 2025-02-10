@@ -4,7 +4,7 @@ from guess import GuessNumber
 from calculator import Calculator
 from stuent import  write, readfile
 from a import read,write
-from api import data_get
+from api import  GetIP
 
 DataFile = "./student.json"
 a= "a.txt"
@@ -23,9 +23,15 @@ def main():
 
     # write(a)
     # read(a)
-    data_get("/data", params={"key": "value"})
+    data = GetIP("/data", None)
 
-    
+    if isinstance(data, dict):  # Ensure data is a dictionary
+        print(data.get('hostname', 'N/A'))
+        print(data.get('city', 'N/A'))
+        print(data.get('region', 'N/A'))
+    else:
+        print("Invalid response received")
+
 
 
 

@@ -3,19 +3,15 @@ import requests
 # Base API URL
 BASE_URL =  "https://ipinfo.io/134.201.250.155/json"
 
-
-def data_get(endpoint, params=None):
-    
+def GetIP ( endPoint , params:'None' ):
     try:
-        response = requests.get(f"{BASE_URL}{endpoint}", params=params, timeout=10)
+        response = requests.get(f"{BASE_URL}{endPoint}", params=params)
         response.raise_for_status()
-        res = response.json()
-        print(res)
-        return res
-    
-    
-        
-    except requests.RequestException as e:
-        print(f"Error fetching data: {e}")
+        # .raise_for_status()
+        return response.json()
+    except(requests.RequestException, ValueError):
+        print("Network connection error occurred")
         return None
-    
+
+
+        
