@@ -83,5 +83,5 @@ async def delete_user(id: str):
         return JSONResponse(content={"message":"User deleted successfully"}, status_code=200)
       else:
         return JSONResponse(content={"message":"User not found"}, status_code=404)
-    except Exception as e:
+   except Exception as e:
       return JSONResponse(content={"error": str(e)}, status_code=500)
