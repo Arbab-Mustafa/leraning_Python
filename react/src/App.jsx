@@ -1,51 +1,86 @@
 import { useEffect, useState } from "react";
 
-import "./App.css";
-
 const API_URL = "http://localhost:8000/";
 
 function App() {
-  const [data, setData] = useState(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [items, setItems] = useState([]);
 
-  useEffect(() => {
-    const fetchRes = async () => {
-      try {
-        const res = await fetch(API_URL);
-        const json = await res.json(); // Convert response to JSON
-        setData(json.Hello);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  const fetchRes = async () => {
+    try {
+      const res = await fetch(`${API_URL}getusers`);
+      const json = await res.json();
+      console.log("Data fetched:", json);
 
+      setItems(json.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
     fetchRes();
   }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}adduser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email }),
+      });
+      const json = await res.json();
+      console.log("Data posted:", json);
+      fetchRes();
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-  useEffect(() => {
-    const fetchRes = async () => {
-      try {
-        const res = await fetch(`${API_URL}items`);
-        const json = await res.json();
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`${API_URL}deleteUser/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
 
-        setItems(json.items);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchRes();
-  }, []);
+      const json = await res.json();
+      console.log("Data deleted:", json);
+      fetchRes();
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
+  };
 
   return (
     <>
-      <h2>Response:</h2>
-
-      <pre>{data}</pre>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={name}
+          placeholder="Name"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="email"
+          value={email}
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button type="submit">Submit</button>
+      </form>
 
       <h2>Items:</h2>
       {items?.map((item) => (
-        <div key={item.id || item.name}>
+        <div key={item._id}>
           <h3>{item.name}</h3>
+          <h3>{item.email}</h3>
+          <button onClick={() => handleDelete(item._id)}>*</button>
         </div>
       ))}
     </>

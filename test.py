@@ -30,8 +30,6 @@ class User(BaseModel):
     email: str
 
 
-
-
 @app.post('/adduser')
 async def add_user(user:User):
    try:
@@ -48,6 +46,8 @@ async def add_user(user:User):
 
 @app.get('/getusers')
 async def get_users():
+
+
   try:
     users = []
     res = await collection.find().to_list(length=1000)
@@ -60,3 +60,28 @@ async def get_users():
 
   except Exception as e:
     return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+
+
+    
+      
+
+     
+
+    
+  except Exception as e:
+    return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+
+@app.delete("/deleteUser/{id}")
+async def delete_user(id: str):
+   try:
+      result = await collection.delete_one({"_id": ObjectId(id)})
+      if result.deleted_count == 1:
+        return JSONResponse(content={"message":"User deleted successfully"}, status_code=200)
+      else:
+        return JSONResponse(content={"message":"User not found"}, status_code=404)
+    except Exception as e:
+      return JSONResponse(content={"error": str(e)}, status_code=500)
