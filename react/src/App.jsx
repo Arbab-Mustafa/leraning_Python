@@ -1,8 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+/* eslint-disable react/prop-types */
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./login";
 import Reg from "./resister";
-import Dasjboard from "./Dasjboard";
+import Dashboard from "./Dasjboard";
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" />;
+};
 
 function App() {
   return (
@@ -10,7 +16,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Reg />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dasjboard />} />
+        {/* Protecting the Dashboard Route */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

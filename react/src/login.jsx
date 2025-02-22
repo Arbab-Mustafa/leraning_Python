@@ -6,7 +6,7 @@ const API_URL = "http://localhost:8000/";
 const Login = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,23 +20,24 @@ const Login = () => {
       });
 
       const data = await res.json();
-      if (data.error) {
-        window.alert(data.error.message);
-        console.log(data.error + "error");
+
+      if (res.status !== 200) {
+        window.alert(data.error);
+        console.log("Login error:", data.error);
       } else {
-        localStorage.setItem("token", data.token);
-        window.alert("Login success");
-        navigation("/dashboard");
-        console.log(data + "success");
+        localStorage.setItem("token", data.access_token); // Store token correctly
+        window.alert("Login successful");
+        navigate("/dashboard");
+        console.log("Login success:", data);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed:", error);
     }
   };
 
   return (
     <>
-      <h1>Register</h1>
+      <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <label>Name</label>
         <input
@@ -44,7 +45,7 @@ const Login = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <label>password</label>
+        <label>Password</label>
         <input
           type="password"
           value={password}
