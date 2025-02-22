@@ -6,8 +6,17 @@ from jose import jwt
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this in production for security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -62,3 +71,21 @@ async def login(user: User):
     response_data = {"access_token": access_token, "token_type": "bearer"}
     return JSONResponse(content=response_data, status_code=200)
 
+@app.get("/")
+async def get_users():
+    try:
+        users = await collection.find().to_list(length=1000)
+        
+        # Convert ObjectId to string
+        for user in users:
+            user["_id"] = str(user["_id"])
+
+        return users
+
+    except Exception as e:
+        return {"error": str(e)}
+
+
+         
+
+    
