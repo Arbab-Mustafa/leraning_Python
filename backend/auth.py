@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends, status
+from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
@@ -25,19 +27,26 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # JWT Config
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://me:Ns2Jd8zrfRB4JxxD@cluster0.lf78r.mongodb.net/fastapi?retryWrites=true&w=majority"
 client = AsyncIOMotorClient(MONGO_URI)
 db = client["auth"]
 collection = db["users"]
+todos_collection = db["todos"]
 class User(BaseModel):
     username: str
     password: str
 
 class Token(BaseModel):
     access_token: str
+
+class Todo(BaseModel):
+    title: str
+    description: str
+    completed: bool
+
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -90,7 +99,6 @@ async def get_users():
     except Exception as e:
         return {"error": str(e)}
 
-
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -128,6 +136,33 @@ def serialize_mongo_doc(doc):
 async def read_users_me(user: dict = Depends(get_current_user)):
     return jsonable_encoder(serialize_mongo_doc(user))
 
-         
+# //////////////////////////// todo.py ////////////////////////////
 
+@app.get("/gettodos", response_model=List[dict])
+async def get_todos():
+    todos_cursor =  todos_collection.find().sort("_id", -1)  # Get cursor
+    todos = await todos_cursor.to_list(length=100)  # Convert to list
     
+    if not todos:  
+        return {"message": "No todos found"}  # Return a proper response instead of print
+
+    # Convert ObjectId to string
+    for todo in todos:
+        todo["_id"] = str(todo["_id"])
+
+    return todos
+
+
+
+@app.post("/addtodo")
+async def add_todo(todo: Todo, user: dict = Depends(get_current_user)):
+    try:
+        new_todo = {"title": todo.title, "description": todo.description, "completed": todo.completed}
+        result = await todos_collection.insert_one(new_todo)  # ✅ `await` the insert operation
+        return {"message": "Todo added successfully", "id": str(result.inserted_id)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+ 
+  

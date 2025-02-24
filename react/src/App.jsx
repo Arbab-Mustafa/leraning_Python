@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./login";
 import Reg from "./resister";
 import Dashboard from "./Dasjboard";
+import TodoForm from "./todoform";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -22,6 +23,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/todoform"
+          element={
+            <ProtectedRoute>
+              <TodoForm />
             </ProtectedRoute>
           }
         />
